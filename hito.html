@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>人という字は人と人が支え合ってできているんですね。</title>
+  </head>
+  <body onLoad="onLoad()">
+
+    <canvas id="view" width="640" height="640"></canvas>
+    <br />
+    <br />
+    <br />
+    <input type="range" id="depth" min="1" max="8" step="1" value="1">
+
+    <script>
+      const input_depth = document.getElementById('depth');
+      var max_depth = 1;
+
+      function drawSecondPerson(ctx, depth, x0, y0, x1, y1, angle, size) {
+
+        console.log("depth=" + depth + ", angle = " + angle);
+
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.closePath();
+        ctx.stroke();
+
+        if (depth >= max_depth) {
+          return;
+        } else {
+          let x0s = [-1, 1, 1, -1];
+          let y0s = [1, 1, -1, -1];
+          let x1s = [1, 1, -1, -1];
+          let y1s = [1, -1, -1, 1];
+
+          let nx0 = x0 + (x0s[angle] * size / 2);
+          let ny0 = y0 + (y0s[angle] * size / 2);
+          let nx1 = nx0 + (x1s[angle] * size / 2);
+          let ny1 = ny0 + (y1s[angle] * size / 2);
+          drawSecondPerson(ctx, depth + 1, nx0, ny0, nx1, ny1, angle, size / 2);
+
+          let nangle = (angle + 1) % 4;
+          let mx0 = x0 + (x0s[nangle] * size / 2);
+          let my0 = y0 + (y0s[nangle] * size / 2);
+          let mx1 = mx0 + (x1s[nangle] * size / 2);
+          let my1 = my0 + (y1s[nangle] * size / 2);
+          drawSecondPerson(ctx, depth + 1, mx0, my0, mx1, my1, nangle, size / 2);
+       
+        }
+        
+      }
+
+      function drawHito() {
+        var canvas = document.getElementById("view");
+        var ctx = canvas.getContext("2d");
+        
+        ctx.clearRect(0, 0, 640, 640);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, 640, 640);
+        
+        ctx.beginPath();
+        ctx.moveTo(640, 0);
+        ctx.lineTo(0, 640);
+        ctx.closePath();
+        ctx.stroke();
+
+        //ctx.beginPath();
+        //ctx.moveTo(320, 320);
+        //ctx.lineTo(640, 640);
+        //ctx.closePath();
+        //ctx.stroke();
+
+        drawSecondPerson(ctx, 1, 320, 320, 640, 640, 0, 320);
+      }
+
+      const onChange = (e) => {
+        max_depth = e.target.value;
+        drawHito();
+      };
+
+      function onLoad() {
+        input_depth.addEventListener('input', onChange);
+        drawHito();
+      }
+    </script>
+    
+    
+  </body>
+</html>
